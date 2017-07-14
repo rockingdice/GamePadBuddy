@@ -421,7 +421,7 @@ local function LoadModules()
 
     --test
     GPB_EntryIcon:New()
-    d("entry icon newed")
+    --d("entry icon newed")
     _initialized = true
   end
 end
@@ -439,26 +439,6 @@ local function triggerAddonLoaded(eventCode, addonName)
       _initialized = false
     end
   end
-end
-
---------------------
---PRINTING TO CHAT--
---------------------
-
---print sells left for the day
-local function printFence(sellsUsed, totalSells)
-  CHAT_SYSTEM:AddMessage("|cffffffTotal sells: |r" .. sellsUsed .. "|cffffff  of |r" .. totalSells .. "|cffffff sells used today|r");
-end
-
---print launders left for the day
-local function printLaunder(laundersUsed, totalLaunders)
-  CHAT_SYSTEM:AddMessage("|cffffffTotal launders: |r" .. laundersUsed .. "|cffffff of |r" .. totalLaunders .. "|cffffff launders used today|r");
-end
-
---function to print the pulled time into the proper format
-local function printTime(seconds, minutes, hours)
-  local time = (hours .. "|cffffff hours, |r" .. minutes .. "|cffffff minutes, |r" .. seconds .. "|cffffff seconds|r");
-  CHAT_SYSTEM:AddMessage(time .. "|cffffff left until reset|r");
 end
 
 ----------------------------------
@@ -495,7 +475,7 @@ end
 
 --function activated by "/gpb"
 local function commandExec()
-  CHAT_SYSTEM:AddMessage("|cffffff test u|r");
+  --CHAT_SYSTEM:AddMessage("|cffffff test u|r");
 end
 
 ZO_GamepadSkillLineXpBar_Setup = function(skillType, skillLineIndex, xpBar, nameControl, forceInit)
@@ -505,7 +485,7 @@ ZO_GamepadSkillLineXpBar_Setup = function(skillType, skillLineIndex, xpBar, name
     if nameControl then
         nameControl:SetText(zo_strformat(SI_SKILLS_ENTRY_LINE_NAME_FORMAT, name))
     end
-	CHAT_SYSTEM:AddMessage("|cffffff test u1|r");
+	--CHAT_SYSTEM:AddMessage("|cffffff test u1|r");
 end
   
 
