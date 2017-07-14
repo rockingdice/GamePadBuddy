@@ -412,6 +412,10 @@ local function LoadModules()
     InventoryHook(GAMEPAD_TOOLTIPS:GetTooltip(GAMEPAD_MOVABLE_TOOLTIP), "LayoutBagItem")
     CacheResearchData()
     CacheItemTraits()
+
+    --test
+    GPB_EntryIcon:New()
+    d("entry icon newed")
     _initialized = true
   end
 end

@@ -1,0 +1,17 @@
+<GuiXml>
+	<Controls>
+		<Control name="GPB_EntryIcon" virtual="true">
+			<Controls>
+				<Texture name="$(parent)Research" textureFile="esoui/art/treeicons/store_indexicon_craftingmotiff_up.dds">
+					<AnchorFill/>
+				</Texture>
+				<Texture name="$(parent)Intricate" textureFile="esoui/art/crafting/enchantment_tabicon_deconstruction_up.dds">
+					<AnchorFill/>
+				</Texture>
+				<Texture name="$(parent)Onrate" textureFile="esoui/art/vendor/vendor_tabicon_sell_up.dds">
+					<AnchorFill/>
+				</Texture>
+			</Controls>
+		</Control>
+	</Controls>
+</GuiXml>
