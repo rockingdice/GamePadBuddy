@@ -34,7 +34,7 @@ GamePadBuddy.CONST.armorRImap = { [ARMORTYPE_LIGHT] = { [EQUIP_TYPE_CHEST] = 1, 
 GamePadBuddy.CONST.weaponRImap = { [WEAPONTYPE_AXE] = 1, [WEAPONTYPE_HAMMER] = 2, [WEAPONTYPE_SWORD] = 3, [WEAPONTYPE_TWO_HANDED_AXE] = 4, [WEAPONTYPE_TWO_HANDED_HAMMER] = 5, [WEAPONTYPE_TWO_HANDED_SWORD] = 6, [WEAPONTYPE_DAGGER] = 7,
           [WEAPONTYPE_BOW] = 1, [WEAPONTYPE_FIRE_STAFF] = 2, [WEAPONTYPE_FROST_STAFF] = 3, [WEAPONTYPE_LIGHTNING_STAFF] = 4, [WEAPONTYPE_HEALING_STAFF] = 5, [WEAPONTYPE_SHIELD] = 6, [WEAPONTYPE_PROP] = -1
         }
-GamePadBuddy.CONST.TraitStatus = { TRAIT_STATUS_RESEARABLE = 1, TRAIT_STATUS_DUPLICATED = 2, TRAIT_STATUS_KNOWN = 3, TRAIT_STATUS_RESEARCHING = 4, TRAIT_STATUS_NONE = -1}
+GamePadBuddy.CONST.TraitStatus = { TRAIT_STATUS_RESEARABLE = 1, TRAIT_STATUS_DUPLICATED = 2, TRAIT_STATUS_KNOWN = 3, TRAIT_STATUS_RESEARCHING = 4, TRAIT_STATUS_INTRICATE = 5, TRAIT_STATUS_ORNATE = 6, TRAIT_STATUS_NONE = -1}
 
 function IsResearchableTrait(itemType, traitType)
   return (itemType == ITEMTYPE_WEAPON or itemType == ITEMTYPE_ARMOR)
@@ -268,7 +268,7 @@ function getItemId(bagId, slotIndex)
 end
 
 
-function GetItemTraitStatus(bagId, slotIndex)
+function GamePadBuddy:GetItemTraitStatus(bagId, slotIndex)
   -- Get current item
   local itemLink = GetItemLink(bagId, slotIndex)
   local itemType = GetItemLinkItemType(itemLink)
@@ -309,6 +309,12 @@ function GetItemTraitStatus(bagId, slotIndex)
         returnStatus = GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_DUPLICATED
       end
     end
+  else
+	if traitType == ITEM_TRAIT_TYPE_WEAPON_INTRICATE or traitType == ITEM_TRAIT_TYPE_ARMOR_INTRICATE then
+      return GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_INTRICATE
+	elseif traitType == ITEM_TRAIT_TYPE_WEAPON_ORNATE or traitType == ITEM_TRAIT_TYPE_ARMOR_ORNATE then
+	  return GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_ORNATE
+	end
   end   
   return returnStatus, name
 end
@@ -320,7 +326,7 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
     
     local style = GetItemLinkItemStyle(itemLink)    
     local _, traitText = GetItemLinkTraitInfo(itemLink) 
-    local traitStatus, name = GetItemTraitStatus(bagId, slotIndex)
+    local traitStatus, name = GamePadBuddy:GetItemTraitStatus(bagId, slotIndex)
     local traitString = nil
     if traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_RESEARABLE then
       traitString = "|c00FF00Researchable|r"

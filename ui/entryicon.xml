@@ -2,13 +2,13 @@
 	<Controls>
 		<Control name="GPB_EntryIcon" virtual="true">
 			<Controls>
-				<Texture name="$(parent)Research" textureFile="esoui/art/treeicons/store_indexicon_craftingmotiff_up.dds">
+				<Texture name="$(parent)Research" textureFile="esoui/art/inventory/gamepad/gp_inventory_icon_craftbag_itemtrait.dds" hidden="true">
 					<AnchorFill/>
 				</Texture>
-				<Texture name="$(parent)Intricate" textureFile="esoui/art/crafting/enchantment_tabicon_deconstruction_up.dds">
+				<Texture name="$(parent)Intricate" textureFile="esoui/art/inventory/gamepad/gp_inventory_icon_craftbag_all.dds" hidden="true">
 					<AnchorFill/>
 				</Texture>
-				<Texture name="$(parent)Onrate" textureFile="esoui/art/vendor/vendor_tabicon_sell_up.dds">
+				<Texture name="$(parent)Ornate" textureFile="esoui/art/inventory/gamepad/gp_inventory_icon_currencies.dds" hidden="true">
 					<AnchorFill/>
 				</Texture>
 			</Controls>
