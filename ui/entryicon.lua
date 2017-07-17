@@ -140,7 +140,7 @@ function GPB_EntryIcon:HookInventory()
 	
 	local o3 = ZO_GamepadFenceLaunder.Refresh
 	ZO_GamepadFenceLaunder.Refresh = function(...)
-		d("Refresh Launder/Sell")
+		--d("Refresh Launder/Sell")
 		GamePadBuddy:RefreshTCCQuestData()
 		GPB_EntryIcon:HookEntrySetup(FENCE_LAUNDER_GAMEPAD.list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
 		GPB_EntryIcon:HookEntrySetup(FENCE_SELL_GAMEPAD.list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
@@ -149,7 +149,7 @@ function GPB_EntryIcon:HookInventory()
 	
 	local o4 = ZO_GamepadStoreManager.ShowComponent
 	ZO_GamepadStoreManager.ShowComponent = function(...)
-		d("Refresh Store")
+		--d("Refresh Store")
 		GamePadBuddy:RefreshTCCQuestData()
 		GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_SELL].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
 		GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_BUY_BACK].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
