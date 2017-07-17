@@ -25,3 +25,4 @@ Libs/LibAddonMenu-2.0/controls/iconpicker.lua
 GamePadBuddy.lua
 ui/entryicon.xml 
 ui/entryicon.lua
+ui/fastteleport.lua

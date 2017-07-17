@@ -506,6 +506,7 @@ local function LoadModules()
 
     --test
     GPB_EntryIcon:New()
+	GPB_FastTeleport:New()
     --d("entry icon newed")
     _initialized = true
   end
