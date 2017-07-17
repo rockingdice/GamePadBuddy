@@ -11,6 +11,9 @@
 				<Texture name="$(parent)Ornate" textureFile="esoui/art/inventory/gamepad/gp_inventory_icon_currencies.dds" hidden="true">
 					<AnchorFill/>
 				</Texture>
+				<Texture name="$(parent)TCCQuest" textureFile="esoui/art/inventory/gamepad/gp_inventory_icon_quest.dds" hidden="true">
+					<AnchorFill/>
+				</Texture>
 			</Controls>
 		</Control>
 	</Controls>

@@ -1,5 +1,6 @@
 GPB_EntryIcon = ZO_Object:Subclass()
-
+TEMPLATE_MODE_ITEM = 1
+TEMPLATE_MODE_ITEM_PRICE = 2
 function GPB_EntryIcon:New(...)
 	--CHAT_SYSTEM:AddMessage("|cffffff test 1 ")
     local object = ZO_Object.New(self)
@@ -12,7 +13,7 @@ function GPB_EntryIcon:Initialize()
 	self:HookInventory()
 end
 
-function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName)
+function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName, mode)
 	if itemList == nil then return end
 	
 	local dataTypes = ZO_ScrollList_GetDataTypeTable(itemList, templateName)
@@ -26,41 +27,64 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName)
 		if c then
 			c:SetHidden(true)
 		end
-		local label = control:GetNamedChild("Label")
 		if c == nil then
-			c = CreateControlFromVirtual("$(parent)GPBEntryIcon", control, "GPB_EntryIcon")
-			c:SetDimensions(40, 40)	
-			local w = label:GetWidth()
-			label:SetWidth(w-40)
+			if mode == TEMPLATE_MODE_ITEM_PRICE then
+				local label = control:GetNamedChild("Label")
+				local price = control:GetNamedChild("Price")
+				c = CreateControlFromVirtual("$(parent)GPBEntryIcon", control, "GPB_EntryIcon")
+				c:SetDimensions(40, 40)	
+				local w = label:GetWidth()
+				label:SetWidth(w-110)
+				c:ClearAnchors() 
+				c:SetAnchor(RIGHT, price, LEFT, 0, 0) 
+			elseif mode == TEMPLATE_MODE_ITEM then
+				local label = control:GetNamedChild("Label")
+				c = CreateControlFromVirtual("$(parent)GPBEntryIcon", control, "GPB_EntryIcon")
+				c:SetDimensions(40, 40)	
+				local w = label:GetWidth()
+				label:SetWidth(w-40)
+				c:ClearAnchors() 
+				c:SetAnchor(LEFT, label, RIGHT, 0, 0) 
+			end
 		end
 		if c then 
-			c:ClearAnchors() 
-			c:SetAnchor(LEFT, label, RIGHT, 0, 0) 
 			c:SetHidden(false)
 			local tex_research = c:GetNamedChild("Research")
 			local tex_intricate = c:GetNamedChild("Intricate")
 			local tex_ornate = c:GetNamedChild("Ornate")
+			local tex_tccquest = c:GetNamedChild("TCCQuest")
 			tex_research:SetHidden(true)
 			tex_intricate:SetHidden(true)
 			tex_ornate:SetHidden(true)
+			tex_tccquest:SetHidden(true)
 			
 			local bag = data.bagId
 			local slotIndex = data.slotIndex
-			local traitStatus = GamePadBuddy:GetItemTraitStatus(bag, slotIndex)
+			local itemFlagStatus = GamePadBuddy:GetItemFlagStatus(bag, slotIndex)
  
-			if traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_ORNATE then
+			if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_ORNATE then
 				tex_ornate:SetHidden(false)
-			elseif traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_INTRICATE then
+			elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_INTRICATE then
 				tex_intricate:SetHidden(false)
+			elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TCC_QUEST or
+					itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TCC_USABLE or
+					itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TCC_USELESS then
+				tex_tccquest:SetHidden(false)
+				tex_tccquest:SetColor(0, 255, 0)
+				if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TCC_USELESS then
+					tex_tccquest:SetColor(255, 0, 0)
+				elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TCC_USABLE then
+					tex_tccquest:SetColor(255, 255, 255)
+				end
 			else
 				tex_research:SetHidden(false)
-				if traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_RESEARABLE then 
+				if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE then 
 				  tex_research:SetColor(0, 255, 0)
-				elseif traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_DUPLICATED then 
+				elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_DUPLICATED then 
 				  tex_research:SetColor(255, 255, 0)
-				elseif traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_KNOWN then 
+				elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_KNOWN then 
 				  tex_research:SetColor(255, 0, 0)
-				elseif traitStatus == GamePadBuddy.CONST.TraitStatus.TRAIT_STATUS_RESEARCHING then 
+				elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARCHING then 
 				  tex_research:SetColor(253, 154, 0)
 				else
 					c:SetHidden(true)
@@ -70,9 +94,9 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName)
 	end
 end
 
-function GPB_EntryIcon:HookEntrySetup(ui)
-	self:ModifyEntryTemplate(ui, "ZO_GamepadItemSubEntryTemplate")
-	self:ModifyEntryTemplate(ui, "ZO_GamepadItemSubEntryTemplateWithHeader")
+function GPB_EntryIcon:HookEntrySetup(ui, templateName, mode)
+	self:ModifyEntryTemplate(ui, templateName, mode)
+	self:ModifyEntryTemplate(ui, templateName .. "WithHeader", mode)
 end
 --[[
 	self.inventories = {
@@ -99,23 +123,54 @@ function GPB_EntryIcon:HookInventory()
  	local o1 = ZO_GamepadInventory.RefreshItemList
 	ZO_GamepadInventory.RefreshItemList = function(...)
 		--d("Refresh Inventory")
-		GPB_EntryIcon:HookEntrySetup(GAMEPAD_INVENTORY.itemList)
+		GamePadBuddy:RefreshTCCQuestData()
+		GPB_EntryIcon:HookEntrySetup(GAMEPAD_INVENTORY.itemList, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 		o1(...)	
 	end  
 	
 	local o2 = ZO_BankingCommon_Gamepad.OnSceneShowing
 	ZO_BankingCommon_Gamepad.OnSceneShowing = function(...)
 		--d("Refresh Bank")
-		GPB_EntryIcon:HookEntrySetup(GAMEPAD_BANKING.withdrawList.list)
-		GPB_EntryIcon:HookEntrySetup(GAMEPAD_BANKING.depositList.list)
+		GamePadBuddy:RefreshTCCQuestData()
+		GPB_EntryIcon:HookEntrySetup(GAMEPAD_BANKING.withdrawList.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
+		GPB_EntryIcon:HookEntrySetup(GAMEPAD_BANKING.depositList.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 		o2(...)
 	end
 	
+	
+	local o3 = ZO_GamepadFenceLaunder.Refresh
+	ZO_GamepadFenceLaunder.Refresh = function(...)
+		d("Refresh Launder/Sell")
+		GamePadBuddy:RefreshTCCQuestData()
+		GPB_EntryIcon:HookEntrySetup(FENCE_LAUNDER_GAMEPAD.list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
+		GPB_EntryIcon:HookEntrySetup(FENCE_SELL_GAMEPAD.list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
+		o3(...)
+	end
+	
+	local o4 = ZO_GamepadStoreManager.ShowComponent
+	ZO_GamepadStoreManager.ShowComponent = function(...)
+		d("Refresh Store")
+		GamePadBuddy:RefreshTCCQuestData()
+		GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_SELL].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
+		GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_BUY_BACK].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
+		o4(...)
+	end
+	  
+	 
 	--Crafting inventory is different, just hook it at first.
 	--d("Refresh Crafting")
-	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.deconstructionPanel.inventory.list)
-	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.improvementPanel.inventory.list)	
+	GamePadBuddy:RefreshTCCQuestData()
+	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.deconstructionPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
+	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.improvementPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)	
 end
 
+function OnOpenStore()
+	d("Refresh Store")
+	GamePadBuddy:RefreshTCCQuestData()
+	GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_SELL].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
+	GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_BUY_BACK].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
+end
+
+  --  EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_OPEN_STORE, OnOpenStore)
 --EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_INVENTORY_FULL_UPDATE, GPB_EntryIcon:HookInventory());  
 --EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, GPB_EntryIcon:HookInventory());  
