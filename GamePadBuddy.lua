@@ -232,17 +232,20 @@ function CacheItemTraits()
             local armorType = GetItemLinkArmorType(itemLink)
             local weaponType = GetItemLinkWeaponType(itemLink)
             local equipType = GetItemLinkEquipType(itemLink)
+			local quality = GetItemLinkQuality(itemLink)
 
             local craftType = ItemToCraftingSkillType(itemType, armorType, weaponType)
             local rIndex = ItemToResearchLineIndex(itemType, armorType, weaponType, equipType)
             local traitIndex = ItemToTraitIndex(traitType)
-            local status = GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex]
+            local statusTable = GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex]
+			local status = statusTable[1]
             if status == -2 then
               --already researched, do nothing
             elseif status == -1 then
               --not researched, and no items recorded, record it                            
               local uniqueId = getItemId(bagToCheck, i)
-              GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex] = uniqueId
+			  local itemLevel = GetItemLevel(bagToCheck, i)
+              GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex] = {uniqueId, quality, itemLevel}
             else 
               --already have a recorded item, duplicated
             end
@@ -266,11 +269,11 @@ function RefreshResearchData()
         local traitType, _, known = GetSmithingResearchLineTraitInfo(craftType, researchIndex, traitIndex)
         local durationSecs, _ = GetSmithingResearchLineTraitTimes(craftType, researchIndex, traitIndex) --can be nil
         if durationSecs then
-          GamePadBuddy.ResearchTraits[craftType][researchIndex][traitIndex] = -3  --researching
+          GamePadBuddy.ResearchTraits[craftType][researchIndex][traitIndex] = {-3}  --researching
         elseif known then
-          GamePadBuddy.ResearchTraits[craftType][researchIndex][traitIndex] = -2  --already researched
+          GamePadBuddy.ResearchTraits[craftType][researchIndex][traitIndex] = {-2}  --already researched
         else
-          GamePadBuddy.ResearchTraits[craftType][researchIndex][traitIndex] = -1
+          GamePadBuddy.ResearchTraits[craftType][researchIndex][traitIndex] = {-1}
         end
       end
     end
@@ -369,7 +372,10 @@ function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
 		local craftType = ItemToCraftingSkillType(itemType, armorType, weaponType)
 		local rIndex = ItemToResearchLineIndex(itemType, armorType, weaponType, equipType)
 		local traitIndex = ItemToTraitIndex(traitType)
-		local status = GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex]
+		local statusTable = GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex]
+		local status = statusTable[1]
+		local curQuality = statusTable[2]
+		local curLevel = statusTable[3]
 		name, _, _, _ = GetSmithingResearchLineInfo(craftType, rIndex)
 		if status == -3 then
 		  --is researching now
@@ -380,17 +386,36 @@ function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
 		elseif status == -1 then
 		  --not researched, and no items recorded, record it                            
 		  local uniqueId = getItemId(bagId, slotIndex)
-
+		  local quality = GetItemLinkQuality(itemLink)
+		  local itemLevel = GetItemLevel(bagId, slotIndex)
+		  
 		  --update cache      
-		  GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex] = uniqueId 
+		  GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex] = {uniqueId, quality, itemLevel} 
 		  returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
 		else 
 		  --already have a recorded item, check if the same
 		  local uniqueId = getItemId(bagId, slotIndex)
+		  local quality = GetItemLinkQuality(itemLink)
+		  local itemLevel = GetItemLevel(bagId, slotIndex)
 		  if status == uniqueId then
 			returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
 		  else
-			returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_DUPLICATED
+			--checck quality and level
+			if quality < curQuality then
+				--replace
+				GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex] = {uniqueId, quality, itemLevel} 
+				returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
+			elseif quality == curQuality then
+				--check itemLevel
+				if itemLevel < curLevel then
+					GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex] = {uniqueId, quality, itemLevel} 
+					returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
+				else
+					returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_DUPLICATED
+				end
+			else
+				returnStatus = GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_DUPLICATED
+			end
 		  end
 		end
 	  else

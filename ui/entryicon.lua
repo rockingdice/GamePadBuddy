@@ -61,6 +61,7 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName, mode)
 			local bag = data.bagId
 			local slotIndex = data.slotIndex
 			local itemFlagStatus = GamePadBuddy:GetItemFlagStatus(bag, slotIndex)
+			--d("item status:" .. itemFlagStatus)
  
 			if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_ORNATE then
 				tex_ornate:SetHidden(false)

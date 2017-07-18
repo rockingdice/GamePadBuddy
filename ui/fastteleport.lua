@@ -63,6 +63,7 @@ end
 
 function GPB_FastTeleport:TeleportToZone(targetZoneName) 
 	d("Finding members in Zone:" .. targetZoneName)
+	local playerName = ZO_GetPrimaryPlayerNameFromUnitTag("player", false)
 	for index = 1, GetNumGuilds() do
 		local guildId = GetGuildId(index)		
 		local numMembers,numOnline,_ = GetGuildInfo(guildId)
@@ -72,8 +73,8 @@ function GPB_FastTeleport:TeleportToZone(targetZoneName)
 			if playerStatus ~= PLAYER_STATUS_OFFLINE then
 				hasCharacter, characterName, zoneName, _, _, _, _, zoneId = GetGuildMemberCharacterInfo(guildId, memberIndex)
 				--zoneId = GetZoneId(zoneIndex)
-				--d("Member:" .. memberName .. " zoneName:"..zoneName .. " zoneId:"..zoneId)
-				if zoneName == targetZoneName then
+				--d("Member:" .. memberName .. " zoneName:"..zoneName .. " zoneId:"..zoneId .. " cha:" .. playerName)
+				if zoneName == targetZoneName and playerName ~= memberName then
 					d("Teleporting to member:" .. memberName .. "(" .. zoneName .. ")".. " Guild:" .. GetGuildName(guildId))
 					JumpToGuildMember(memberName)
 					return true
