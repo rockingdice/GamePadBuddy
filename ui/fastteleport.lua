@@ -57,6 +57,9 @@ function GPB_FastTeleport:hookFastTeleport()
     }
  
     ZO_Gamepad_AddBackNavigationKeybindDescriptors(GAMEPAD_WORLD_MAP_LOCATIONS.keybindStripDescriptor, GAME_NAVIGATION_TYPE_BUTTON, ZO_WorldMapInfo_OnBackPressed)
+    --add trigger control to fast travel
+    ZO_Gamepad_AddListTriggerKeybindDescriptors(GAMEPAD_WORLD_MAP_LOCATIONS.keybindStripDescriptor, GAMEPAD_WORLD_MAP_LOCATIONS.list)
+
 	GAMEPAD_WORLD_MAP_LOCATIONS:RefreshKeybind()
 end
  
