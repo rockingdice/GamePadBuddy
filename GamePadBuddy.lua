@@ -491,7 +491,7 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 	end
 
     if TamrielTradeCentre ~= nil then
-		tooltip:AddLine(zo_strformat("|cf23d8eTCC:|r"))
+		tooltip:AddLine(zo_strformat("|cf23d8eTTC:|r"))
         local priceInfo = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     
         if (priceInfo == nil) then
