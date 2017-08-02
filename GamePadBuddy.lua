@@ -433,6 +433,7 @@ end
 -- Original code by prasoc, edited by ScotteYx. Thanks for the improvement :)
 local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
     local itemLink = GetItemLink(bagId, slotIndex)      
+    local itemType, specializedItemType = GetItemLinkItemType(itemLink)
     
     local style = GetItemLinkItemStyle(itemLink)    
     local _, traitText = GetItemLinkTraitInfo(itemLink) 
@@ -489,6 +490,14 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 			tooltip:AddLine(bonusDescription, tooltip:GetStyle("activeBonus"))
 		end
 	end
+	
+	if itemType == ITEMTYPE_RECIPE then
+		if(IsItemLinkRecipeKnown(itemLink)) then
+			tooltip:AddLine(GetString(SI_RECIPE_ALREADY_KNOWN))
+		else
+			tooltip:AddLine(GetString(SI_GAMEPAD_PROVISIONER_USE_TO_LEARN_RECIPE))
+		end
+	end
 
     if TamrielTradeCentre ~= nil then
 		tooltip:AddLine(zo_strformat("|cf23d8eTTC:|r"))
@@ -517,6 +526,45 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
           end
         end
  
+ 
+        if itemType == ITEMTYPE_RECIPE then
+		
+			local resultItemLink = GetItemLinkRecipeResultItemLink(itemLink)
+			local priceInfo = TamrielTradeCentrePrice:GetPriceInfo(resultItemLink)
+		
+		    if (priceInfo == nil) then
+				tooltip:AddLine(zo_strformat("|cf23d8eProduct <<1>>|r", GetString(TTC_PRICE_NOLISTINGDATA)))
+			else
+			  if (priceInfo.SuggestedPrice ~= nil) then
+				tooltip:AddLine(zo_strformat("|cf23d8eProduct <<1>>|r", string.format(GetString(TTC_PRICE_SUGGESTEDXTOY), 
+				  TamrielTradeCentre:FormatNumber(priceInfo.SuggestedPrice, 0), TamrielTradeCentre:FormatNumber(priceInfo.SuggestedPrice * 1.25, 0))))
+			  end
+
+			  if (true) then 
+				tooltip:AddLine(zo_strformat("|cf23d8eProduct <<1>>|r", string.format(GetString(TTC_PRICE_AGGREGATEPRICESXYZ), TamrielTradeCentre:FormatNumber(priceInfo.Avg), 
+				  TamrielTradeCentre:FormatNumber(priceInfo.Min), TamrielTradeCentre:FormatNumber(priceInfo.Max)))) 
+			  end
+
+			  if (true) then
+				if (priceInfo.EntryCount ~= priceInfo.AmountCount) then 
+					tooltip:AddLine(zo_strformat("|cf23d8eProduct <<1>>|r", string.format(GetString(TTC_PRICE_XLISTINGSYITEMS), TamrielTradeCentre:FormatNumber(priceInfo.EntryCount), TamrielTradeCentre:FormatNumber(priceInfo.AmountCount)))) 
+				  tooltip:AddLine()
+				else
+					tooltip:AddLine(zo_strformat("|cf23d8eProduct <<1>>|r", string.format(GetString(TTC_PRICE_XLISTINGS), TamrielTradeCentre:FormatNumber(priceInfo.EntryCount)))) 
+				end
+			  end
+			end
+	 
+		
+		
+			
+			local tipLine, avePrice, graphInfo = MasterMerchant:itemPriceTip(resultItemLink, false, false)
+			if(tipLine ~= nil) then
+				tooltip:AddLine(zo_strformat("|c7171d1Product <<1>>|r", tipLine))  
+			else
+				tooltip:AddLine(zo_strformat("|c7171d1Product MM price (0 sales, 0 days): UNKNOWN|r")) 
+			end
+		end
     end 
 	
 	if MasterMerchant ~= nil then 
@@ -533,7 +581,7 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 			tooltip:AddLine(zo_strformat("|c7171d1<<1>>|r", craftInfo)) 
 		end	
 		
-        if GetItemLinkItemType(itemLink) == ITEMTYPE_RECIPE then
+        if itemType == ITEMTYPE_RECIPE then
 			local resultItemLink = GetItemLinkRecipeResultItemLink(itemLink)
 			
 			local tipLine, avePrice, graphInfo = MasterMerchant:itemPriceTip(resultItemLink, false, false)
