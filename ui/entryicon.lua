@@ -163,6 +163,7 @@ function GPB_EntryIcon:HookInventory()
 	GamePadBuddy:RefreshTCCQuestData()
 	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.deconstructionPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.improvementPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)	
+	 HookDestructionList()
 end
 
 function OnOpenStore()
@@ -172,6 +173,16 @@ function OnOpenStore()
 	GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_BUY_BACK].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
 end
 
+function HookDestructionList() 
+	local testfunction = _G.ZO_SharedSmithingExtraction_IsExtractableOrRefinableItem
+	_G.ZO_SharedSmithingExtraction_IsExtractableOrRefinableItem = function (bagId, slotIndex) 
+		d("test111")
+		local isResearchItem = GamePadBuddy:GetItemFlagStatus(bagId, slotIndex) == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
+		return testfunction(bagId, slotIndex) and not isResearchItem
+	end
+end
+
+--EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_END_CRAFTING_STATION_INTERACT, OnInteractCraftingStation);  
   --  EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_OPEN_STORE, OnOpenStore)
 --EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_INVENTORY_FULL_UPDATE, GPB_EntryIcon:HookInventory());  
 --EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, GPB_EntryIcon:HookInventory());  
