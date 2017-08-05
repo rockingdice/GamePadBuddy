@@ -4,6 +4,11 @@ ESO Addon, Gamepad enhancement
 ------
 
 ## Features:
+
+### [Inventory Tooltip]
+* You can see a tooltip when selecting a gear slot in the first level menu.
+
+
 ### [Trait Markers]
 * Show markers that represent researching/known/duplicated/researchable/intricate/ornate in all bags. 
   1. Green Star: Researchable
