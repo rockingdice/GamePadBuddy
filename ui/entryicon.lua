@@ -2,14 +2,12 @@ GPB_EntryIcon = ZO_Object:Subclass()
 TEMPLATE_MODE_ITEM = 1
 TEMPLATE_MODE_ITEM_PRICE = 2
 function GPB_EntryIcon:New(...)
-	--CHAT_SYSTEM:AddMessage("|cffffff test 1 ")
     local object = ZO_Object.New(self)
     object:Initialize(...)
     return object
 end
 
 function GPB_EntryIcon:Initialize()
-	--CHAT_SYSTEM:AddMessage("|cffffff test 2 ")
 	self:HookInventory()
 end
 
@@ -22,7 +20,6 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName, mode)
 	
 	dataTypes.setupFunction = function(control, data, ...)
 		original(control, data, ...)
-		--CHAT_SYSTEM:AddMessage("|cffffff " .. control.key .. "," .. control.templateName .. "," .. control.dataIndex)
 		local c = control:GetNamedChild("GPBEntryIcon")
 		if c then
 			c:SetHidden(true)
@@ -61,7 +58,6 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName, mode)
 			local bag = data.bagId
 			local slotIndex = data.slotIndex
 			local itemFlagStatus = GamePadBuddy:GetItemFlagStatus(bag, slotIndex)
-			--d("item status:" .. itemFlagStatus)
  
 			if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_ORNATE then
 				tex_ornate:SetHidden(false)
@@ -99,31 +95,12 @@ function GPB_EntryIcon:HookEntrySetup(ui, templateName, mode)
 	self:ModifyEntryTemplate(ui, templateName, mode)
 	self:ModifyEntryTemplate(ui, templateName .. "WithHeader", mode)
 end
---[[
-	self.inventories = {
-		bag = {
-			ui = GAMEPAD_INVENTORY.itemList,
-		},
-		bank_withdraw = {
-			ui = GAMEPAD_BANKING.withdrawList,
-		},
-		bank_deposit = {
-			ui = GAMEPAD_BANKING.depositList,
-		},
-		deconstruction = {
-			ui = SMITHING_GAMEPAD.deconstructionPanel.inventory.list,
-		},
-		improvement = {
-			ui = SMITHING_GAMEPAD.improvementPanel.inventory.list,
-		},
-	}
-	]]--
+
 function GPB_EntryIcon:HookInventory()
 	--Inventory GUI is not initialized at first, so override initialze function to make the hook.
 	--Because list doesn't have a callback
  	local o1 = ZO_GamepadInventory.RefreshItemList
 	ZO_GamepadInventory.RefreshItemList = function(...)
-		--d("Refresh Inventory")
 		GamePadBuddy:RefreshTCCQuestData()
 		GPB_EntryIcon:HookEntrySetup(GAMEPAD_INVENTORY.itemList, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 		o1(...)	
@@ -131,7 +108,6 @@ function GPB_EntryIcon:HookInventory()
 	
 	local o2 = ZO_BankingCommon_Gamepad.OnSceneShowing
 	ZO_BankingCommon_Gamepad.OnSceneShowing = function(...)
-		--d("Refresh Bank")
 		GamePadBuddy:RefreshTCCQuestData()
 		GPB_EntryIcon:HookEntrySetup(GAMEPAD_BANKING.withdrawList.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 		GPB_EntryIcon:HookEntrySetup(GAMEPAD_BANKING.depositList.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
@@ -141,7 +117,6 @@ function GPB_EntryIcon:HookInventory()
 	
 	local o3 = ZO_GamepadFenceLaunder.Refresh
 	ZO_GamepadFenceLaunder.Refresh = function(...)
-		--d("Refresh Launder/Sell")
 		GamePadBuddy:RefreshTCCQuestData()
 		GPB_EntryIcon:HookEntrySetup(FENCE_LAUNDER_GAMEPAD.list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
 		GPB_EntryIcon:HookEntrySetup(FENCE_SELL_GAMEPAD.list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
@@ -150,7 +125,6 @@ function GPB_EntryIcon:HookInventory()
 	
 	local o4 = ZO_GamepadStoreManager.ShowComponent
 	ZO_GamepadStoreManager.ShowComponent = function(...)
-		--d("Refresh Store")
 		GamePadBuddy:RefreshTCCQuestData()
 		GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_SELL].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
 		GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_BUY_BACK].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
@@ -159,15 +133,13 @@ function GPB_EntryIcon:HookInventory()
 	  
 	 
 	--Crafting inventory is different, just hook it at first.
-	--d("Refresh Crafting")
 	GamePadBuddy:RefreshTCCQuestData()
 	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.deconstructionPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.improvementPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)	
-	 HookDestructionList()
+	HookDestructionList()
 end
 
 function OnOpenStore()
-	d("Refresh Store")
 	GamePadBuddy:RefreshTCCQuestData()
 	GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_SELL].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
 	GPB_EntryIcon:HookEntrySetup(STORE_WINDOW_GAMEPAD.components[ZO_MODE_STORE_BUY_BACK].list, "ZO_GamepadPricedVendorItemEntryTemplate", TEMPLATE_MODE_ITEM_PRICE)
@@ -176,13 +148,7 @@ end
 function HookDestructionList() 
 	local testfunction = _G.ZO_SharedSmithingExtraction_IsExtractableOrRefinableItem
 	_G.ZO_SharedSmithingExtraction_IsExtractableOrRefinableItem = function (bagId, slotIndex) 
-		--d("test111")
 		local isResearchItem = GamePadBuddy:GetItemFlagStatus(bagId, slotIndex) == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
 		return testfunction(bagId, slotIndex) and not isResearchItem
 	end
 end
-
---EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_END_CRAFTING_STATION_INTERACT, OnInteractCraftingStation);  
-  --  EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_OPEN_STORE, OnOpenStore)
---EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_INVENTORY_FULL_UPDATE, GPB_EntryIcon:HookInventory());  
---EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_INVENTORY_SINGLE_SLOT_UPDATE, GPB_EntryIcon:HookInventory());  

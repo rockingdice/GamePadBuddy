@@ -90,8 +90,6 @@ local function IsWoodworkingWeapon(weaponType)
       or weaponType == WEAPONTYPE_SHIELD
 end
 function ItemToCraftingSkillType(itemType, armorType, weaponType)
-  --GetItemLinkCraftingSkillType didn't return what I expected
-  --ToDo: Investigate GetItemLinkRecipeCraftingSkillType(*string* _itemLink_)
   if itemType == ITEMTYPE_ARMOR then
     if armorType == ARMORTYPE_HEAVY then
       return CRAFTING_TYPE_BLACKSMITHING
@@ -122,7 +120,6 @@ function ItemToTraitIndex(traitType)
 end
 
 function ItemToResearchLineIndex(itemType, armorType, weaponType, equipType)
-  --Figure out which research index this item is. Hope to find a function to do this
   if itemType == ITEMTYPE_ARMOR then
     if armorType == ARMORTYPE_HEAVY then
       if equipType == EQUIP_TYPE_CHEST then --Cuirass
@@ -205,28 +202,18 @@ function ItemToResearchLineIndex(itemType, armorType, weaponType, equipType)
   return 0
 end
 
----------------------
---TRIGGER FUNCTIONS--
----------------------
- 
--- Credit to ScotteYx for this! thanks for this improvement
 function CacheItemTraits()
     local bagsToCheck = {
         [1] = BAG_BACKPACK,
         [2] = BAG_BANK,
-        --[3] = BAG_GUILDBANK,
     }
     for _, bagToCheck in pairs(bagsToCheck) do
-      -- Get bag size
       local bagSize = GetBagSize(bagToCheck)
      
-      -- Iterate through BAG
       for i = 0, bagSize do
-          -- Get current item
           local itemLink = GetItemLink(bagToCheck, i)
           local itemType = GetItemLinkItemType(itemLink)
           local traitType, _ = GetItemLinkTraitInfo(itemLink)
-          --Only check researchable items
           if IsResearchableTrait(itemType, traitType) then
             -- Check items for trait researching
             local armorType = GetItemLinkArmorType(itemLink)
@@ -287,15 +274,11 @@ function getItemId(bagId, slotIndex)
 end
 
 function GamePadBuddy:RefreshTCCQuestData()
-	--d("Refresh TCC QuestData")
 	GamePadBuddy.CurrentTCCQuest = TCC_QUEST_UNKNOWN
 	local quests = QUEST_JOURNAL_MANAGER:GetQuestListData()
-    -- If we're showing the options list, make sure we still have the quest that we're viewing options for
 	for i, quest in ipairs(quests) do
 		if quest.name == "The Covetous Countess" then
-			--parse quest info 
 			local _, backgroundText, activeStepText = GetJournalQuestInfo(quest.questIndex)
-			--d(activeStepText)
 			if string.find(activeStepText, "games") then
 				GamePadBuddy.CurrentTCCQuest = TCC_QUEST_GAMES_DOLLS_STATUES
 			elseif string.find(activeStepText, "ritual") then
@@ -323,7 +306,6 @@ function GamePadBuddy:IsTCCQuestItemTag(tag)
 end
  
 function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
-  -- Get current item
   local itemLink = GetItemLink(bagId, slotIndex)
   local itemType = GetItemLinkItemType(itemLink)
   local traitType, _ = GetItemLinkTraitInfo(itemLink)
@@ -341,13 +323,11 @@ function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
 		return returnStatus, name
 	end
     local numItemTags = GetItemLinkNumItemTags(itemLink)
-	--d("Name:" .. GetItemLinkName(itemLink) .." SlotIndex:" .. slotIndex)
     if numItemTags > 0 then 
 		local useful = false
         for i = 1, numItemTags do
             local itemTagDescription, itemTagCategory = GetItemLinkItemTagInfo(itemLink, i)
 			local itemTagString = zo_strformat(SI_TOOLTIP_ITEM_TAG_FORMATER, itemTagDescription)	
-			--d("itemTagString:"..itemTagString)
 			if GamePadBuddy.CONST.TCCQuestTags[GamePadBuddy.CurrentTCCQuest][itemTagString] ~= nil then
 				return GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TCC_QUEST, name
 			end
@@ -457,32 +437,9 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
       
     end
 
-    -- CHAT_SYSTEM:AddMessage("|cffffff test u "
-    --   .. ITEM_TRAIT_TYPE_WEAPON_POWERED .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_CHARGED .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_PRECISE .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_INFUSED .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_DEFENDING .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_TRAINING .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_SHARPENED .. "," 
-    --   .. ITEM_TRAIT_TYPE_WEAPON_DECISIVE .. ","       
-    --   .. ITEM_TRAIT_TYPE_WEAPON_NIRNHONED .. "//"       
-    --   .. ITEM_TRAIT_TYPE_ARMOR_STURDY .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_IMPENETRABLE .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_REINFORCED .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_WELL_FITTED .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_TRAINING .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_INFUSED .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_PROSPEROUS .. "," 
-    --   .. ITEM_TRAIT_TYPE_ARMOR_DIVINES .. ","       
-    --   .. ITEM_TRAIT_TYPE_ARMOR_NIRNHONED .. ","
-    --   .. "|r");
-
 	
 	local isSetItem, setName, numBonuses, numEquipped, maxEquipped = GetItemLinkSetInfo(itemLink)
 	if isSetItem then
-		--tooltip:AddLine("Set: " .. setName .. " " .. numBonuses .. " " .. numEquipped .. " " .. maxEquipped)
-		 
 		tooltip:AddLine(zo_strformat("|cf2da3d<<1>>(<<2>>/<<3>>)|r", setName, numEquipped, maxEquipped))
 		local maxSetBonus = numBonuses + 2 - maxEquipped 
 		for i = 0, maxSetBonus do
@@ -595,13 +552,6 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 end
 
 function InventoryHook(tooltip, method)
-  -- local origMethod = tooltip[method]
-
-  -- tooltip[method] = function(self, ...)
-  --   AddInventoryPreInfo(self, linkFunc(...))
-  --   origMethod(self, ...) 
-  -- end
-
   local origMethod = tooltip[method]
   tooltip[method] = function(control, bagId, slotIndex, ...) 
     AddInventoryPreInfo(control, bagId, slotIndex, ...)
@@ -614,7 +564,6 @@ function InventoryMenuHook(tooltip, method)
   tooltip[method] = function(selectedData, ...) 
     origMethod(selectedData, ...)  
 	if tooltip.selectedEquipSlot then
-		--d("eslot: " .. tooltip.selectedEquipSlot)
 		GAMEPAD_TOOLTIPS:LayoutBagItem(GAMEPAD_LEFT_TOOLTIP, BAG_WORN, tooltip.selectedEquipSlot)
 	end
 	  
@@ -631,22 +580,17 @@ local function LoadModules()
     RefreshResearchData()
     CacheItemTraits() 
 
-    --test
     GPB_EntryIcon:New()
     GPB_FastTeleport:New()
   
-    --d("entry icon newed")
     _initialized = true
 
   end
 end
 
---event triggered on addons loaded; function to sort through all incoming loaded addons, and only call function for the correct one
 local function triggerAddonLoaded(eventCode, addonName)
   if  (addonName == GamePadBuddyData.name) then
-    --unregister initialization event
     EVENT_MANAGER:UnregisterForEvent(GamePadBuddyData.name, EVENT_ADD_ON_LOADED);
-
 
     if(IsInGamepadPreferredMode()) then
       LoadModules()
@@ -656,41 +600,8 @@ local function triggerAddonLoaded(eventCode, addonName)
   end
 end
 
-----------------------------------
---PULL/DATA PROCESSING FUNCTIONS--
-----------------------------------
-
---function to convert time from seconds (pulled from API) to seconds, minutes, hours
-local function convertTime(seconds)
-  --initialize new variables
-  local minutes, hours = 0, 0;
-  --control for odd server bugs (negative time or above 24 hours)
-  if (seconds < 0) or (seconds >= 86400) then
-    seconds, minutes, hours = 0, 0, 0;
-  --assuming nothing is going wrong, continue
-  else  
-    minutes = math.floor(seconds / 60);
-    hours = math.floor(minutes / 60);
-  
-    if seconds >= 60 then
-     seconds = seconds % 60;
-    end
-  
-    if minutes >= 60 then
-      minutes = minutes % 60;
-    end
-  end
-  --seconds, minutes, and hours are returned separately
-  return seconds, minutes, hours;
-end
-
-------------------
---CHAT FUNCTIONS--
-------------------
-
 --function activated by "/gpb"
 local function commandExec()
-  --CHAT_SYSTEM:AddMessage("|cffffff test u|r");
 end
 
 ZO_GamepadSkillLineXpBar_Setup = function(skillType, skillLineIndex, xpBar, nameControl, forceInit)
@@ -700,16 +611,8 @@ ZO_GamepadSkillLineXpBar_Setup = function(skillType, skillLineIndex, xpBar, name
     if nameControl then
         nameControl:SetText(zo_strformat(SI_SKILLS_ENTRY_LINE_NAME_FORMAT, name))
     end
-	--CHAT_SYSTEM:AddMessage("|cffffff test u1|r");
 end
-  
 
-----------------------
---EVENT REGISTRATION--
-----------------------
-
---register the slash command "/fence" to allow user command to do things
 SLASH_COMMANDS["/gpb"] = commandExec
---register events to update addon when loaded, when stolen items are removed while arrested, or when any item slot is updated
 EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_ADD_ON_LOADED, triggerAddonLoaded);  
 EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function(code, inGamepad)  LoadModules() end)
