@@ -1,8 +1,8 @@
 ## Title: GamePadBuddy
-## APIVersion: 100019
+## APIVersion: 100020
 ## Author: RockingDice
 ## Description: Type "/gamepadbuddy" 
-## Version: 1.00
+## Version: 1.01
 ## SavedVariables: GamePadBuddyVars
 ## OptionalDependsOn: LibAddonMenu-2.0
 

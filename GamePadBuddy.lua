@@ -306,6 +306,10 @@ function GamePadBuddy:IsTCCQuestItemTag(tag)
 end
  
 function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
+	if not GamePadBuddy.ResearchTraits then
+		RefreshResearchData()
+	end
+		
   local itemLink = GetItemLink(bagId, slotIndex)
   local itemType = GetItemLinkItemType(itemLink)
   local traitType, _ = GetItemLinkTraitInfo(itemLink)
@@ -352,6 +356,7 @@ function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
 		local craftType = ItemToCraftingSkillType(itemType, armorType, weaponType)
 		local rIndex = ItemToResearchLineIndex(itemType, armorType, weaponType, equipType)
 		local traitIndex = ItemToTraitIndex(traitType)
+
 		local statusTable = GamePadBuddy.ResearchTraits[craftType][rIndex][traitIndex]
 		local status = statusTable[1]
 		local curQuality = statusTable[2]
