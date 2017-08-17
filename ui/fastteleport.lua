@@ -7,7 +7,9 @@ function GPB_FastTeleport:New(...)
 end
 
 function GPB_FastTeleport:Initialize()
-	self:hookFastTeleport()
+	if GamePadBuddy.curSavedVars.fastteleport then
+		self:hookFastTeleport()
+	end
 end
 
 function GPB_FastTeleport:hookFastTeleport() 
@@ -63,6 +65,7 @@ end
 function GPB_FastTeleport:TeleportToZone(targetZoneName) 
 	d("Finding members in Zone:" .. targetZoneName)
 	local playerName = ZO_GetPrimaryPlayerNameFromUnitTag("player", false)
+	--d("pname:" .. playerName)
 	for index = 1, GetNumGuilds() do
 		local guildId = GetGuildId(index)		
 		local numMembers,numOnline,_ = GetGuildInfo(guildId)
@@ -79,5 +82,6 @@ function GPB_FastTeleport:TeleportToZone(targetZoneName)
 			end
 		end
 	end
+	ZO_Alert(UI_ALERT_CATEGORY_ERROR, SOUNDS.NEGATIVE_CLICK, "Cannot find an online guild member in " .. targetZoneName)
 	return false
 end

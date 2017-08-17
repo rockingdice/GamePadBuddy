@@ -405,9 +405,9 @@ function GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
 		end
 	  else
 		if traitType == ITEM_TRAIT_TYPE_WEAPON_INTRICATE or traitType == ITEM_TRAIT_TYPE_ARMOR_INTRICATE then
-		  return GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_INTRICATE
+		  return GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_INTRICATE, name
 		elseif traitType == ITEM_TRAIT_TYPE_WEAPON_ORNATE or traitType == ITEM_TRAIT_TYPE_ARMOR_ORNATE then
-		  return GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_ORNATE
+		  return GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_ORNATE, name
 		end
 	  end   
 	end
@@ -420,40 +420,47 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
     local itemLink = GetItemLink(bagId, slotIndex)      
     local itemType, specializedItemType = GetItemLinkItemType(itemLink)
     
-    local style = GetItemLinkItemStyle(itemLink)    
-    local _, traitText = GetItemLinkTraitInfo(itemLink) 
-    local itemFlagStatus, name = GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
-    local traitString = nil
-    if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE then
-      traitString = "|c00FF00Researchable|r"
-    elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_DUPLICATED then
-      traitString = "|cFFFF00Duplicated|r"
-    elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_KNOWN then
-      traitString = "|cFF0000Known|r"
-    elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARCHING then
-      traitString = "|cFD9A00Researching|r"
-    else
-      traitString = ""
-    end
-    if itemFlagStatus ~= GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_NONE then
-      local traitType, _, _, _, _ = GetItemLinkTraitInfo(itemLink)
-      tooltip:AddLine(zo_strformat("<<1>> - <<2>> (<<3>>)", name, GetString("SI_ITEMTRAITTYPE", traitType), traitString), {fontSize=27, customSpacing=15}, tooltip:GetStyle("bodyHeader"))
-    else
-      
-    end
-
-	
-	local isSetItem, setName, numBonuses, numEquipped, maxEquipped = GetItemLinkSetInfo(itemLink)
-	if isSetItem then
-		tooltip:AddLine(zo_strformat("|cf2da3d<<1>>(<<2>>/<<3>>)|r", setName, numEquipped, maxEquipped))
-		local maxSetBonus = numBonuses + 2 - maxEquipped 
-		for i = 0, maxSetBonus do
-			local _, bonusDescription = GetItemLinkSetBonusInfo(itemLink, false, maxEquipped - 1 + i)
-			tooltip:AddLine(bonusDescription, tooltip:GetStyle("activeBonus"))
+	if GamePadBuddy.curSavedVars.traitmarkers then
+		local style = GetItemLinkItemStyle(itemLink)    
+		local _, traitText = GetItemLinkTraitInfo(itemLink) 
+		local itemFlagStatus, name = GamePadBuddy:GetItemFlagStatus(bagId, slotIndex)
+		local traitString = nil
+		if itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE then
+		  traitString = "|c00FF00Researchable|r"
+		elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_DUPLICATED then
+		  traitString = "|cFFFF00Duplicated|r"
+		elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_KNOWN then
+		  traitString = "|cFF0000Known|r"
+		elseif itemFlagStatus == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARCHING then
+		  traitString = "|cFD9A00Researching|r"
+		else
+		  traitString = ""
+		end
+		if itemFlagStatus ~= GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_NONE then
+		  local traitType, _, _, _, _ = GetItemLinkTraitInfo(itemLink)
+			if name == "" then
+				tooltip:AddLine(zo_strformat("<<1>>", GetString("SI_ITEMTRAITTYPE", traitType)), {fontSize=27, customSpacing=15}, tooltip:GetStyle("bodyHeader"))
+			else
+				tooltip:AddLine(zo_strformat("<<1>> - <<2>> (<<3>>)", name, GetString("SI_ITEMTRAITTYPE", traitType), traitString), {fontSize=27, customSpacing=15}, tooltip:GetStyle("bodyHeader"))
+			end
+		else
+		  
+		end
+	end
+ 
+	if GamePadBuddy.curSavedVars.setinfo then
+		local isSetItem, setName, numBonuses, numEquipped, maxEquipped = GetItemLinkSetInfo(itemLink)
+		if isSetItem then
+			tooltip:AddLine(zo_strformat("|cf2da3d<<1>>(<<2>>/<<3>>)|r", setName, numEquipped, maxEquipped))
+			local maxSetBonus = numBonuses + 2 - maxEquipped 
+			for i = 0, maxSetBonus do
+				local _, bonusDescription = GetItemLinkSetBonusInfo(itemLink, false, maxEquipped - 1 + i)
+				tooltip:AddLine(bonusDescription, tooltip:GetStyle("activeBonus"))
+			end
 		end
 	end
 	
-	if itemType == ITEMTYPE_RECIPE then
+	if GamePadBuddy.curSavedVars.recipes and itemType == ITEMTYPE_RECIPE then
 		if(IsItemLinkRecipeKnown(itemLink)) then
 			tooltip:AddLine(GetString(SI_RECIPE_ALREADY_KNOWN))
 		else
@@ -461,7 +468,7 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 		end
 	end
 
-    if TamrielTradeCentre ~= nil then
+    if GamePadBuddy.curSavedVars.ttc and TamrielTradeCentre ~= nil then
 		tooltip:AddLine(zo_strformat("|cf23d8eTTC:|r"))
         local priceInfo = TamrielTradeCentrePrice:GetPriceInfo(itemLink)
     
@@ -489,7 +496,7 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
         end
  
  
-        if itemType == ITEMTYPE_RECIPE then
+        if GamePadBuddy.curSavedVars.recipes and itemType == ITEMTYPE_RECIPE then
 		
 			local resultItemLink = GetItemLinkRecipeResultItemLink(itemLink)
 			local priceInfo = TamrielTradeCentrePrice:GetPriceInfo(resultItemLink)
@@ -517,19 +524,10 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 			  end
 			end
 	 
-		
-		
-			
-			local tipLine, avePrice, graphInfo = MasterMerchant:itemPriceTip(resultItemLink, false, false)
-			if(tipLine ~= nil) then
-				tooltip:AddLine(zo_strformat("|c7171d1Product <<1>>|r", tipLine))  
-			else
-				tooltip:AddLine(zo_strformat("|c7171d1Product MM price (0 sales, 0 days): UNKNOWN|r")) 
-			end
 		end
     end 
 	
-	if MasterMerchant ~= nil then 
+	if GamePadBuddy.curSavedVars.mm and MasterMerchant ~= nil then 
 		tooltip:AddLine(zo_strformat("|c7171d1MM:|r"))
 		local tipLine, avePrice, graphInfo = MasterMerchant:itemPriceTip(itemLink, false, false)
 		if(tipLine ~= nil) then
@@ -543,7 +541,7 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 			tooltip:AddLine(zo_strformat("|c7171d1<<1>>|r", craftInfo)) 
 		end	
 		
-        if itemType == ITEMTYPE_RECIPE then
+        if GamePadBuddy.curSavedVars.recipes and itemType == ITEMTYPE_RECIPE then
 			local resultItemLink = GetItemLinkRecipeResultItemLink(itemLink)
 			
 			local tipLine, avePrice, graphInfo = MasterMerchant:itemPriceTip(resultItemLink, false, false)
@@ -568,7 +566,7 @@ function InventoryMenuHook(tooltip, method)
   local origMethod = tooltip[method]
   tooltip[method] = function(selectedData, ...) 
     origMethod(selectedData, ...)  
-	if tooltip.selectedEquipSlot then
+	if GamePadBuddy.curSavedVars.invtooltip and tooltip.selectedEquipSlot then
 		GAMEPAD_TOOLTIPS:LayoutBagItem(GAMEPAD_LEFT_TOOLTIP, BAG_WORN, tooltip.selectedEquipSlot)
 	end
 	  
@@ -592,10 +590,56 @@ local function LoadModules()
 
   end
 end
+GamePadBuddy.defaultSettings = {
+--general
+	invtooltip = true,
+	traitmarkers = true,
+	ornateintricate = true,
+	hideresearchables = true,
+	fastteleport = true,
+	qhtcc = true,
+--tooltip
+	mm = true,
+	ttc = true,
+	setinfo = true,
+	recipes = true, 
+}
+
+GamePadBuddy.defaultAcctSettings = {
+--account 
+	accountWideSetting = true,
+--general
+	invtooltip = true,
+	traitmarkers = true,
+	ornateintricate = true,
+	hideresearchables = true,
+	fastteleport = true,
+	qhtcc = true,
+--tooltip
+	mm = true,
+	ttc = true,
+	setinfo = true,
+	recipes = true, 
+}
+function GamePadBuddy.UpdateCurrentSavedVars()
+	if not GamePadBuddy.acctSavedVariables.accountWideSetting  then
+		GamePadBuddy.curSavedVars = GamePadBuddy.charSavedVariables
+		--d("Use Character setting")
+	else 
+		GamePadBuddy.curSavedVars = GamePadBuddy.acctSavedVariables
+		--d("Use Accountwide Setting")
+	end
+end
 
 local function triggerAddonLoaded(eventCode, addonName)
   if  (addonName == GamePadBuddyData.name) then
     EVENT_MANAGER:UnregisterForEvent(GamePadBuddyData.name, EVENT_ADD_ON_LOADED);
+
+	-- load our saved variables
+	GamePadBuddy.charSavedVariables = ZO_SavedVars:New('GamePadBuddySavedVars', 1.0, nil, GamePadBuddy.defaultSettings)
+	GamePadBuddy.acctSavedVariables = ZO_SavedVars:NewAccountWide('GamePadBuddySavedVars', 1.0, nil, GamePadBuddy.defaultAcctSettings)
+
+	GamePadBuddy.AddonMenu.Init()
 
     if(IsInGamepadPreferredMode()) then
       LoadModules()
@@ -605,7 +649,7 @@ local function triggerAddonLoaded(eventCode, addonName)
   end
 end
 
---function activated by "/gpb"
+--function activated by "/gb"
 local function commandExec()
 end
 
@@ -618,6 +662,6 @@ ZO_GamepadSkillLineXpBar_Setup = function(skillType, skillLineIndex, xpBar, name
     end
 end
 
-SLASH_COMMANDS["/gpb"] = commandExec
+SLASH_COMMANDS["/gb"] = commandExec
 EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_ADD_ON_LOADED, triggerAddonLoaded);  
 EVENT_MANAGER:RegisterForEvent(GamePadBuddyData.name, EVENT_GAMEPAD_PREFERRED_MODE_CHANGED, function(code, inGamepad)  LoadModules() end)

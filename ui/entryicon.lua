@@ -24,6 +24,11 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName, mode)
 		if c then
 			c:SetHidden(true)
 		end
+		if  not GamePadBuddy.curSavedVars.traitmarkers and 
+			not GamePadBuddy.curSavedVars.ornateintricate and 
+			not GamePadBuddy.curSavedVars.qhtcc then
+			return
+		end
 		if c == nil then
 			if mode == TEMPLATE_MODE_ITEM_PRICE then
 				local label = control:GetNamedChild("Label")
@@ -87,6 +92,17 @@ function GPB_EntryIcon:ModifyEntryTemplate(itemList, templateName, mode)
 					c:SetHidden(true)
 				end
 			end
+
+			if not GamePadBuddy.curSavedVars.traitmarkers then
+				tex_research:SetHidden(true)
+			end
+			if not GamePadBuddy.curSavedVars.ornateintricate then
+				tex_intricate:SetHidden(true)
+				tex_ornate:SetHidden(true)
+			end
+			if not GamePadBuddy.curSavedVars.qhtcc then
+				tex_tccquest:SetHidden(true)
+			end
 		end
 	end
 end
@@ -136,7 +152,9 @@ function GPB_EntryIcon:HookInventory()
 	GamePadBuddy:RefreshTCCQuestData()
 	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.deconstructionPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)
 	GPB_EntryIcon:HookEntrySetup(SMITHING_GAMEPAD.improvementPanel.inventory.list, "ZO_GamepadItemSubEntryTemplate", TEMPLATE_MODE_ITEM)	
+	
 	HookDestructionList()
+	HookImprovementList()
 end
 
 function OnOpenStore()
@@ -148,7 +166,23 @@ end
 function HookDestructionList() 
 	local testfunction = _G.ZO_SharedSmithingExtraction_IsExtractableOrRefinableItem
 	_G.ZO_SharedSmithingExtraction_IsExtractableOrRefinableItem = function (bagId, slotIndex) 
-		local isResearchItem = GamePadBuddy:GetItemFlagStatus(bagId, slotIndex) == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
-		return testfunction(bagId, slotIndex) and not isResearchItem
+		if GamePadBuddy.curSavedVars.hideresearchables then
+			local isResearchItem = GamePadBuddy:GetItemFlagStatus(bagId, slotIndex) == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
+			return testfunction(bagId, slotIndex) and not isResearchItem
+		else
+			return testfunction(bagId, slotIndex)
+		end
+	end
+end
+
+function HookImprovementList()
+	local testfunction = _G.ZO_SharedSmithingImprovement_CanItemBeImproved
+	_G.ZO_SharedSmithingImprovement_CanItemBeImproved = function (itemData) 
+		if GamePadBuddy.curSavedVars.hideresearchables then
+			local isResearchItem = GamePadBuddy:GetItemFlagStatus(itemData.bagId, itemData.slotIndex) == GamePadBuddy.CONST.ItemFlags.ITEM_FLAG_TRAIT_RESEARABLE
+			return testfunction(itemData) and not isResearchItem
+		else
+			return testfunction(itemData)
+		end
 	end
 end

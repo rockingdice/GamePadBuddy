@@ -1,9 +1,9 @@
-## Title: GamePadBuddy
+## Title: RockingDice's GamePadBuddy
 ## APIVersion: 100020
 ## Author: RockingDice
-## Description: Type "/gamepadbuddy" 
-## Version: 1.01
-## SavedVariables: GamePadBuddyVars
+## Description: Type "/gb" 
+## Version: 1.02
+## SavedVariables: GamePadBuddySavedVars
 ## OptionalDependsOn: LibAddonMenu-2.0
 
 Libs/LibStub/LibStub.lua
@@ -23,6 +23,7 @@ Libs/LibAddonMenu-2.0/controls/texture.lua
 Libs/LibAddonMenu-2.0/controls/iconpicker.lua
 
 GamePadBuddy.lua
+AddonMenu.lua
 ui/entryicon.xml 
 ui/entryicon.lua
 ui/fastteleport.lua
