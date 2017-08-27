@@ -452,6 +452,11 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 		local isSetItem, setName, numBonuses, numEquipped, maxEquipped = GetItemLinkSetInfo(itemLink)
 		if isSetItem then
 			tooltip:AddLine(zo_strformat("|cf2da3d<<1>>(<<2>>/<<3>>)|r", setName, numEquipped, maxEquipped))
+
+      if GamePadBuddy.curSavedVars.ib then
+        tooltip:AddLine(GetSetSourceFromIB(setName))
+      end
+
 			local maxSetBonus = numBonuses + 2 - maxEquipped 
 			for i = 0, maxSetBonus do
 				local _, bonusDescription = GetItemLinkSetBonusInfo(itemLink, false, maxEquipped - 1 + i)
@@ -644,11 +649,12 @@ local function triggerAddonLoaded(eventCode, addonName)
   if  (addonName == GamePadBuddyData.name) then
     EVENT_MANAGER:UnregisterForEvent(GamePadBuddyData.name, EVENT_ADD_ON_LOADED);
 
-	-- load our saved variables
-	GamePadBuddy.charSavedVariables = ZO_SavedVars:New('GamePadBuddySavedVars', 1.0, nil, GamePadBuddy.defaultSettings)
-	GamePadBuddy.acctSavedVariables = ZO_SavedVars:NewAccountWide('GamePadBuddySavedVars', 1.0, nil, GamePadBuddy.defaultAcctSettings)
+  	-- load our saved variables
+  	GamePadBuddy.charSavedVariables = ZO_SavedVars:New('GamePadBuddySavedVars', 1.0, nil, GamePadBuddy.defaultSettings)
+  	GamePadBuddy.acctSavedVariables = ZO_SavedVars:NewAccountWide('GamePadBuddySavedVars', 1.0, nil, GamePadBuddy.defaultAcctSettings)
 
-	GamePadBuddy.AddonMenu.Init()
+  	GamePadBuddy.AddonMenu.Init()
+    initExtensions()
 
     if(IsInGamepadPreferredMode()) then
       LoadModules()

@@ -1,3 +1,12 @@
+function initExtensions()
+  if ItemBrowser then
+	  if (not ItemBrowser.list) then
+	    -- Lazy initialization
+	    ItemBrowser.list = ItemBrowserList:New(ItemBrowserFrame);
+	  end
+  end
+end
+
 --Integration with ArkadiusTradeTools
 function GetATTPriceAndStatus(itemLink)
   if not ArkadiusTradeTools then
@@ -57,4 +66,24 @@ function GetATTPriceAndStatus(itemLink)
 	end
 end
 return L["ATT_STR_NO_PRICE"], ""
+end
+
+
+--Integration with ItemizationBrowser
+function GetSetSourceFromIB(name) 
+  if not ItemBrowser or not ItemBrowser.list then
+    return ""
+  end
+
+  local searchInput = name
+
+  for i = 1, #ItemBrowser.list.masterList do
+    local data = ItemBrowser.list.masterList[i];
+
+    if ItemBrowser.list:CheckForMatch(data, searchInput) then
+      return zo_strformat("<<1>> - <<2>>", data.color:Colorize(data.itemType), data.source)
+    end
+  end
+
+  return ""
 end

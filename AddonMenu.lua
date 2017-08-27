@@ -140,6 +140,16 @@ function GamePadBuddy.AddonMenu.Init()
 			setFunc = function(value) GamePadBuddy.curSavedVars.setinfo = value
 			end,
 		},        
+		{
+			type = "checkbox",
+			name = "    Itemization Browser",
+			tooltip = "Add a tooltip for showing set type and source info from add-on 'Itemization Browser'.",
+			getFunc = function() return GamePadBuddy.curSavedVars.ib end,
+			setFunc = function(value) GamePadBuddy.curSavedVars.ib = value end,
+			disabled = function() 
+				return not GamePadBuddy.curSavedVars.setinfo
+			end,
+		},      
 	}
 	LAM:RegisterAddonPanel("GAMEPADBUDDY_SETTINGS", panelData)
 	LAM:RegisterOptionControls("GAMEPADBUDDY_SETTINGS", optionsTable)
