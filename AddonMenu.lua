@@ -118,6 +118,14 @@ function GamePadBuddy.AddonMenu.Init()
 		},
 		{
 			type = "checkbox",
+			name = "Arkadius Trade Tools",
+			tooltip = "Add a tooltip for showing item info from add-on 'Arkadius Trade Tools'.",
+			getFunc = function() return GamePadBuddy.curSavedVars.att end,
+			setFunc = function(value) GamePadBuddy.curSavedVars.att = value
+			end,
+		},
+		{
+			type = "checkbox",
 			name = "Recipes Info",
 			tooltip = "Add a tooltip for showing recipes status and related prices(need ttc or mm).",
 			getFunc = function() return GamePadBuddy.curSavedVars.recipes end,

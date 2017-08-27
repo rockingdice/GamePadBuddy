@@ -2,7 +2,7 @@
 ## APIVersion: 100020
 ## Author: RockingDice
 ## Description: Type "/gb" 
-## Version: 1.02
+## Version: 1.03
 ## SavedVariables: GamePadBuddySavedVars
 ## OptionalDependsOn: LibAddonMenu-2.0
 
@@ -22,6 +22,7 @@ Libs/LibAddonMenu-2.0/controls/slider.lua
 Libs/LibAddonMenu-2.0/controls/texture.lua
 Libs/LibAddonMenu-2.0/controls/iconpicker.lua
 
+Helper.lua
 GamePadBuddy.lua
 AddonMenu.lua
 ui/entryicon.xml 

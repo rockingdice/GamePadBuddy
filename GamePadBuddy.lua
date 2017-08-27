@@ -552,6 +552,13 @@ local function AddInventoryPreInfo(tooltip, bagId, slotIndex)
 			end
 		end
 	end
+
+  if GamePadBuddy.curSavedVars.att and ArkadiusTradeTools then 
+      local priceLine, statusLine = GetATTPriceAndStatus(itemLink)
+      tooltip:AddLine(zo_strformat("|cf58585ATT:|r"))
+      tooltip:AddLine(zo_strformat("|cf58585<<1>>|r", priceLine))
+      tooltip:AddLine(zo_strformat("|cf58585<<1>>|r", statusLine))
+  end
 end
 
 function InventoryHook(tooltip, method)
@@ -601,6 +608,7 @@ GamePadBuddy.defaultSettings = {
 --tooltip
 	mm = true,
 	ttc = true,
+  att = true,
 	setinfo = true,
 	recipes = true, 
 }
@@ -618,6 +626,7 @@ GamePadBuddy.defaultAcctSettings = {
 --tooltip
 	mm = true,
 	ttc = true,
+  att = true,
 	setinfo = true,
 	recipes = true, 
 }
