@@ -1,10 +1,33 @@
 function initExtensions()
+  --Integration with Itemization Browser
   if ItemBrowser then
 	  if (not ItemBrowser.list) then
 	    -- Lazy initialization
 	    ItemBrowser.list = ItemBrowserList:New(ItemBrowserFrame);
 	  end
   end
+
+
+--Integration with Iakoni's Gear Changer
+	if GearChangerByIakoni then
+		SCENE_MANAGER.scenes['gamepad_inventory_root']:RegisterCallback("StateChange", GearChangerByIakoni.CallBackInventory)
+	end
+	
+--Integration with Iakoni's Skill Changer
+	if SkillChangerByIakoni then
+		local InventoryScene = SCENE_MANAGER.scenes["gamepad_skills_root"]
+		--local inventoryScene = SCENE_MANAGER:GetScene("inventory")
+		InventoryScene:RegisterCallback("StateChange", function(oldState, newState) 
+			-- states: hiding, showing, shown, hidden
+			if(newState == "showing") then
+				-- do something if the inventory is beginning to show
+				SCBI:SetHidden(false)
+			elseif(newState == "hiding") then
+				-- do something if the inventory is beginning to hide
+				SCBI:SetHidden(true)
+			end
+		end)
+	end
 end
 
 --Integration with ArkadiusTradeTools
