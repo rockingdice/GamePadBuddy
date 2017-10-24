@@ -1,10 +1,10 @@
 ## Title: RockingDice's GamePadBuddy
-## APIVersion: 100020
+## APIVersion: 100021
 ## Author: RockingDice
 ## Description: Type "/gb" 
-## Version: 1.04
+## Version: 1.05
 ## SavedVariables: GamePadBuddySavedVars
-## OptionalDependsOn: LibAddonMenu-2.0
+## OptionalDependsOn: LibAddonMenu-2.0 ItemBrowser
 
 Libs/LibStub/LibStub.lua
 Libs/LibAddonMenu-2.0/LibAddonMenu-2.0.lua
