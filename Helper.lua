@@ -35,7 +35,7 @@ function GetATTPriceAndStatus(itemLink)
   if not ArkadiusTradeTools then
     return "", ""
   end
-  local L = ArkadiusTradeTools.Modules.Sales.Localization
+	local L = ShissuFramework["func"]._L("ArkadiusTradeTools")
 	local itemSales = ArkadiusTradeTools.Modules.Sales:GetItemSalesInformation(itemLink, GetTimeStamp() - 30 * 86400)
 	local itemQuality = GetItemLinkQuality(itemLink)
 	local itemType = GetItemLinkItemType(itemLink)
@@ -78,17 +78,17 @@ function GetATTPriceAndStatus(itemLink)
 			if (itemType == ITEMTYPE_MASTER_WRIT) then
 				local vouchers = tonumber(GenerateMasterWritRewardText(link):match("%d+"))
 
-				priceString = string.format(L["ATT_FMTSTR_TOOLTIP_PRICE_MASTER_WRIT"], ZO_LocalizeDecimalNumber(averagePrice * vouchers) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t", ZO_LocalizeDecimalNumber(averagePrice) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t")
-				statsString = string.format(L["ATT_FMTSTR_TOOLTIP_STATS_MASTER_WRIT"], ZO_LocalizeDecimalNumber(#sales), ZO_LocalizeDecimalNumber(quantity))
+				priceString = string.format(L("ATT_FMTSTR_TOOLTIP_PRICE_MASTER_WRIT"), ZO_LocalizeDecimalNumber(averagePrice * vouchers) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t", ZO_LocalizeDecimalNumber(averagePrice) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t")
+				statsString = string.format(L("ATT_FMTSTR_TOOLTIP_STATS_MASTER_WRIT"), ZO_LocalizeDecimalNumber(#sales), ZO_LocalizeDecimalNumber(quantity))
 			else
-				priceString = string.format(L["ATT_FMTSTR_TOOLTIP_PRICE_ITEM"], ZO_LocalizeDecimalNumber(averagePrice) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t")
-				statsString = string.format(L["ATT_FMTSTR_TOOLTIP_STATS_ITEM"], ZO_LocalizeDecimalNumber(#sales), ZO_LocalizeDecimalNumber(quantity))
+				priceString = string.format(L("ATT_FMTSTR_TOOLTIP_PRICE_ITEM"), ZO_LocalizeDecimalNumber(averagePrice) .. " |t16:16:EsoUI/Art/currency/currency_gold.dds|t")
+				statsString = string.format(L("ATT_FMTSTR_TOOLTIP_STATS_ITEM"), ZO_LocalizeDecimalNumber(#sales), ZO_LocalizeDecimalNumber(quantity))
 			end
 			return priceString, statsString
 		end
 	end
 end
-return L["ATT_STR_NO_PRICE"], ""
+return L("ATT_STR_NO_PRICE"), ""
 end
 
 
